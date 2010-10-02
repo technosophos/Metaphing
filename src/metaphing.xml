@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<project name="MetaPhing" 
+  description="Create a new PHP project"
+  basedir="." 
+  default="main"
+>
+<!--
+This is the master MetaPhing builder.
+
+Copyright (c) 2010, Matt Butcher, some rights reserved.
+-->
+
+  <property name="project" value="METAPHING"/>
+  <property name="basepath" value="${application.startdir}"/>
+  <property name="origindir" value="."/>
+  <property name="srcdir" value="./src"/>
+  <property name="docsdir" value="${origindir}/doc"/>
+  
+  <fileset id="skeleton" dir="${origindir}/skeleton">
+    <include name="**"/>
+  </fileset>
+
+  <!-- Files that must be included in the release -->
+  <fileset id="licensefiles" dir=".">
+    <include name="README.md"/>
+    <!-- include name="INSTALL"/ -->
+    <include name="COPYING-MIT.txt"/>
+    <include name="CREDITS"/>
+  </fileset>
+
+  <!-- Files to be treated as source code -->
+  <fileset id="sourcecode" dir="">
+    <include name="**/*" />
+  </fileset>
+
+  <!-- Main Target -->
+  <target name="main" description="main target">
+    <echo>The MetaPhing Project Builder. Use metaphing.php to run this script.</echo>
+  </target>
+  
+  <!-- TEST -->
+  <target name="test" description="Test target.">
+    <echo>This is a test target</echo>
+    <echo>User is ${env.USER}</echo>
+    <echo>Origin: ${origindir}</echo>
+    <echo>Project: ${basepath}/${project}</echo>
+    <echo>Base Dir: ${basepath}</echo>
+  </target>
+  
+  <!-- Create a new project -->
+  <target name="newProject" description="Create a new project">
+    <!-- Create the project -->
+    <mkdir dir="${basepath}/${project}"/>
+    
+    <!-- Copy in the base files -->
+    <copy todir="${basepath}/${project}">
+      <fileset refid="skeleton"/>
+      <fileset refid="licensefiles"/>
+      <filterchain>
+        <replacetokens begintoken="@@" endtoken="@@">
+          <token key="PROJECT" value="${project}"/>
+          <token key="AUTHOR"  value="${env.USER}"/>
+        </replacetokens>
+      </filterchain>
+    </copy>
+    
+    <!-- Copy the base API docs. -->
+    <mkdir dir="${basepath}/${project}/doc/Fortissimo"/>
+    <copy todir="${basepath}/${project}/doc/Fortissimo">
+      <fileset dir="${docsdir}">
+        <include pattern="api/**"/>
+        <include pattern="Overview.txt"/>
+      </fileset>
+    </copy>
+    
+    <!-- Clean up core Fortissimo tools -->
+    <reflexive>
+      <fileset dir="${basepath}/${project}/src">
+        <!-- Right now, we just compress Fortissimo. -->
+        <include pattern="Fortissimo.php"/>
+      </fileset>
+      <!--
+      <filterchain>
+        <stripwhitespace/>
+        <stripphpcomments/>
+      </filterchain>
+      -->
+    </reflexive>
+    
+    <!-- Move _htaccess to .htaccess -->
+    <move file="${basepath}/${project}/src/_htaccess" 
+      toFile="${basepath}/${project}/src/.htaccess" overwrite="false"/>
+    <!-- Safely copy commands.xml -->
+    <available file="${basepath}/${project}/src/config/commands.xml" property="commands_exists"/>
+    <if>
+      <isfalse value="commands_exists"/>
+      <then>
+        <move file="${basepath}/${project}/src/config/commands-update.xml"
+          toFile="${basepath}/${project}/src/config/commands.xml" overwrite="false"/>
+      </then>
+    </if>
+  </target>
+</project>

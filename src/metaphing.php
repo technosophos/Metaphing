@@ -16,27 +16,46 @@ if (getenv('PHP_CLASSPATH')) {
   if (!defined('PHP_CLASSPATH')) { define('PHP_CLASSPATH',  get_include_path()); }
 }
 
-//require 'FortissimoFramework.php'; 
+require 'MetaPhingFoundation.php'; 
 require 'phing/Phing.php';
 
-$buildfile = Fortissimo::getBuildXML();
-$origindir = Fortissimo::getLibraryPath();
+$buildfile = MetaPhingFoundation::getBuildXML();
+$origindir = MetaPhingFoundation::getLibraryPath();
 
 $args = isset($argv) ? $argv : $_SERVER['argv'];
 
 if (count($argv) < 2 || $argv[1] == '-h' || $argv[1] == '--help') {
-  echo "${argv[0]} projectName
+  echo "${argv[0]} [-t] projectName
   
-Create a new Fortissimo project. This command will build out all of
-the necessary directories and files for begining a new project.";
+Create a new PHP project. This command will build out all of
+the necessary directories and files for begining a new project.
+
+Options:
+  -t, --test: Test only. Print out information about where the new project would be 
+      created and exit.
+";
   exit(1);
 }
 
 array_shift($args);
+
+$projectName = array_pop($args);
 $build_target = 'newProject';
 
+foreach ($args as $arg) {
+  switch ($arg) {
+    case '-t':
+    case '--test':
+      $build_target = 'test';
+      break;
+    default:
+      printf("Unknown argument %s. Ignoring.\n", $arg);
+      break;
+  }
+}
+
 $phing_args = array(
-  '-Dproject=' . array_pop($args),
+  '-Dproject=' . $projectName,
   '-Dorigindir=' . $origindir,
   '-f',
   $buildfile,

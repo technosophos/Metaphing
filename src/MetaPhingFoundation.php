@@ -4,7 +4,7 @@
  */
 class MetaPhingFoundation {
   public static function getBuildXML() {
-    return dirname(__FILE__) . '/Fortissimo/fortissimo.xml';
+    return dirname(__FILE__) . '/metaphing.xml';
   }
   
   public static function getLibraryPath() {
