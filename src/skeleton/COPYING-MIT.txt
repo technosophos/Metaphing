@@ -1,4 +1,4 @@
-@@TITLE@@
+@@PROJECT@@
 @@AUTHOR@@
 Copyright (C) @@YEAR@@ @@AUTHOR@@
 

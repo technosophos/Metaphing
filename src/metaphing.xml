@@ -38,17 +38,24 @@ Copyright (c) 2010, Matt Butcher, some rights reserved.
     <echo>The MetaPhing Project Builder. Use metaphing.php to run this script.</echo>
   </target>
   
+  <target name="setup">
+    <tstamp>
+        <format property="YEAR" pattern="%Y"/>
+    </tstamp>
+  </target>
+  
   <!-- TEST -->
-  <target name="test" description="Test target.">
+  <target name="test" description="Test target." depends="setup">
     <echo>This is a test target</echo>
     <echo>User is ${env.USER}</echo>
     <echo>Origin: ${origindir}</echo>
     <echo>Project: ${basepath}/${project}</echo>
     <echo>Base Dir: ${basepath}</echo>
+    <echo>${project} Copyright (c) ${YEAR} ${env.USER}</echo>
   </target>
   
   <!-- Create a new project -->
-  <target name="newProject" description="Create a new project">
+  <target name="newProject" description="Create a new project" depends="setup">
     <!-- Create the project -->
     <mkdir dir="${basepath}/${project}"/>
     
@@ -60,6 +67,7 @@ Copyright (c) 2010, Matt Butcher, some rights reserved.
         <replacetokens begintoken="@@" endtoken="@@">
           <token key="PROJECT" value="${project}"/>
           <token key="AUTHOR"  value="${env.USER}"/>
+          <token key="YEAR" value="${YEAR}"/>
         </replacetokens>
       </filterchain>
     </copy>
@@ -87,17 +95,9 @@ Copyright (c) 2010, Matt Butcher, some rights reserved.
       -->
     </reflexive>
     
-    <!-- Move _htaccess to .htaccess -->
-    <move file="${basepath}/${project}/src/_htaccess" 
-      toFile="${basepath}/${project}/src/.htaccess" overwrite="false"/>
-    <!-- Safely copy commands.xml -->
-    <available file="${basepath}/${project}/src/config/commands.xml" property="commands_exists"/>
-    <if>
-      <isfalse value="commands_exists"/>
-      <then>
-        <move file="${basepath}/${project}/src/config/commands-update.xml"
-          toFile="${basepath}/${project}/src/config/commands.xml" overwrite="false"/>
-      </then>
-    </if>
+    <!-- Move _gitignore to .gitignore -->
+    <move file="${basepath}/${project}/_gitignore" 
+      toFile="${basepath}/${project}/.gitignore" overwrite="false"/>
+
   </target>
 </project>

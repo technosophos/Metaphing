@@ -4,8 +4,12 @@
  * metaphing.php is a frontend to MetaPhing.
  *
  * This file is derived largely from Fortissimo's fff.php.
+ *
+ * In a nutshell, we use MetaPhing to bootstrap Phing to build a new
+ * project, complete with its own Phing setup.
  * @package metaphing
  * @author M Butcher
+ * @license MIT License
  */
  
 /* This is from phing.php */
@@ -54,6 +58,7 @@ foreach ($args as $arg) {
   }
 }
 
+// Prepare arguments for running Phing.
 $phing_args = array(
   '-Dproject=' . $projectName,
   '-Dorigindir=' . $origindir,
