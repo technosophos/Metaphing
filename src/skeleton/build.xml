@@ -2,7 +2,7 @@
 <project 
   name="@@PROJECT@@" 
   description="A PHP project"
-  default="info">
+  default="longhelp">
 <!--
 This is the Phing build file for @@PROJECT@@.
 
@@ -10,7 +10,12 @@ Phing is a build tool. Learn more about it at http://phing.info.
 
 Copyright (c) @@YEAR@@, @@AUTHOR@@.
 -->
-  <target name="info" description="Information on the build system.">
+  <target name="help" description="Print short help message.">
+    <echo>
+      Use Phing to manage this project. To learn more, type 'phing longhelp'.
+    </echo>
+  </target>
+  <target name="longhelp" description="Information on the build system.">
     <echo>
 To build @@PROJECT@@, run:
 
@@ -43,7 +48,47 @@ To run coverage analysis, do:
   phing coverage
   
 This will create HTML pages describing code coverage. The coverage analysis will be available in test/coverage
-  
+
+OPTIONAL FEATURES
+
+Phar Packages
+=============
+
+This script can produce Phar packages on systems with PHP 5.3:
+
+  phing pharBuild
+
+TextMate Integration
+====================
+
+If you are a TextMate user, you can install the Phing TextMate bundle 
+(http://github.com/technosophos/phing-tmbundle) to get some special TextMate features.
+
+Special TextMate keybindings:
+
+  CMD-U: Run any target in the build file
+  CMD-SHIFT-I: Run the tmtest unit test target
+  CMD-SHIFT-U: Run the tmtarget target, which you can configure to do whatever you want
+
+Pear Channel Support
+====================
+
+This script will generate PEAR-compatible packages, provided you configure your settings correctly.
+If you use Pirum (http://pirum-project.org) to manage your PEAR channel, you can use the 
+Phing-Pirum package (http://github.com/technosophos/Phing-Pirum) to build or manage the channel from
+these scripts. You need to edit the Pirum configuration in build.xml, though.
+
+Pyrus Support
+=============
+
+We are experimenting with supporting Pyrus, the next generation PEAR client. Pyrus can build
+packages much more effectively, and supports a wide range of useful commands. Currently, we are
+working on two targets:
+
+   phing pyrusMake
+   phing pyrusPackage
+
+========  
 To print this message, do:
 
   phing info
@@ -51,7 +96,7 @@ To print this message, do:
     </echo>
   </target>
   
-  <!-- This is used for Pirum tasks. -->
+  <property file="project.properties"/>
 
   <!-- IMPORTANT: Project settings. -->
   <property name="projectname" value="@@PROJECT@@"/>
@@ -145,15 +190,45 @@ To print this message, do:
   <!-- ====================================================================
                 PHING TARGETS
        ==================================================================== -->  
+  
+  <!-- TARGET
+  Print useful information and exit.
+  -->
+  <target name="info" description="Print information about this project" depends="setup">
+    <echo>
+      
+    Project name: ${projectname}
+    By ${project.lead} (${project.lead.email})
+    Summary: ${project.summary}
+    Description: ${project.description}
+
+    Source code: ${srcdir}
+    Complete packages: ${packagedir}
+    Version string pattern: ${projectname}-dev${DSTAMP}
+
+Edit project.properties (or build.xml) to set the above.
+    </echo>
+  </target>
        
-  <!-- BUILD: The primary build target. -->
+  <!-- TARGET
+  The primary build target. 
+  
+  Runs the following:
+     * lint
+     * setup
+     * prebuild
+     * docBuild
+     * fullBuild
+  -->
   <target name="build" depends="lint, setup, prebuild, docBuild, fullBuild"
-    description="Generate docs, minimal, and full builds and then creates packages."
+    description="Generate docs, and full build and then creates packages."
     >
     <!-- Main build target. Calls all dependencies and exits. -->  
   </target>
   
-  <!-- Target that should be run always. -->
+  <!-- TARGET
+  Target that should be run always.
+  -->
   <target name="setup" description="Run required configuration for any build.">
     <tstamp/>
     <!-- 
@@ -165,8 +240,10 @@ To print this message, do:
     <property name="version" value="dev${DSTAMP}"/>
   </target>
   
-  <!-- Tasks to do before any build. -->
-  <target name="prebuild">
+  <!-- TARGET
+  Tasks to do before any build. 
+  -->
+  <target name="prebuild" description="Prepare for building. No need to call directly.">
     <mkdir dir="./dist"/>
   </target>
 
@@ -307,9 +384,6 @@ To print this message, do:
       examplesdir="examples"
       quiet="true"
       >
-      <!-- 
-        output="HTML:frames:phphtmllib"
-      -->
       <fileset refid="sourcecode"/>
       <fileset refid="tutorials"/>
       <fileset refid="examplecode"/>
@@ -339,7 +413,6 @@ To print this message, do:
   </target>
   
   <!-- TARGET
-  
   This is the tmtarget for the TextMate Phing package. This allows you to run 
   your phing builds from inside of TextMate.
   
@@ -354,7 +427,6 @@ To print this message, do:
   </target>
   
   <!-- TARGET
-  
   Run a fast test and print the results to the console.
   -->
   <target name="ftest" description="Run a quick unit test." depends="pretest">
@@ -478,11 +550,11 @@ To print this message, do:
   <!-- TARGET
   Build a Phar package.
   
-  For PHP 5.3 and up, this is another way of building a release -- a much better way.
+  For PHP 5.3 and up, this is another way of building a release - a much better way.
   
   This target is not called by the default build.
   -->
-  <target name="pharBuild" depends="setup,prebuild">
+  <target name="pharBuild" depends="setup,prebuild" description="Build a Phar package of this project.">
     
     <property name="releasedir" value="${builddir}/${projectname}-${version}-phar" override="true"/>
     <echo>${releasedir}</echo>
@@ -527,7 +599,7 @@ To print this message, do:
   <!-- TARGET
   Use Pyrus to generate package.xml files. 
   -->
-  <target name="pyrusMake" depends="setup,prebuild">
+  <target name="pyrusMake" depends="setup,prebuild" description="EXPERIMENTAL: Use Pyrus to generate a package.xml file from this project.">
     
   </target>
   
@@ -535,7 +607,7 @@ To print this message, do:
   
   Use Pyrus to create a PEAR package. 
   -->
-  <target name="pyrusPackage" depends="setup,prebuild">
+  <target name="pyrusPackage" depends="setup,prebuild" description="EXPERIMENTAL: Use Pyrus to generate a PEAR package.">
     
   </target>
 

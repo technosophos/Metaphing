@@ -10,42 +10,11 @@ metaphing...
 
 ## TO DO
 
-LICENSE FILES:
-
-  - Set default to MIT
-  - Replace date
-  - replace author
-  - Replace first line with project name
-  
-README.md:
-
-  - Set title on first line
-  - Scaffold for INSTALLATION and USAGE sections
-  
-DIRECTORIES TO CREATE:
-
-  - src
-  - test
-  - examples
-  - doc
-  - data
-  - scripts
-  - bin/build
-  - dist
-  
 PEAR SETUP
 
-  - Default build is to PEAR 1.9
   - Support for Pyrus?
   - Support for Pirum using Phing-Pirum
   
-UNIT TEST SETUP
-
-  - Set up location for testing classes
-  - Set up quick test target
-  - Set up full test target
-  - Set up TM test target
-
 PHP DOC SETUP
 
   - Set up full doc build
