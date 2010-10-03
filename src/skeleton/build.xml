@@ -12,11 +12,34 @@ Copyright (c) @@YEAR@@, @@AUTHOR@@.
 -->
   <target name="help" description="Print short help message.">
     <echo>
-      Use Phing to manage this project. To learn more, type 'phing longhelp'.
+      
+ #############
+# Basic Usage #
+ #############
+
+Use Phing to manage this project. 
+
+To list all of the available commands, do:
+
+  phing -l
+
+To build a release, type:
+
+  phing build -Dversion=1.0.0
+  
+Leaving -Dversion off will result in a "snapshot" release.
+
+To learn about more options, type
+
+  phing longhelp
     </echo>
   </target>
   <target name="longhelp" description="Information on the build system.">
     <echo>
+ ############
+# THE BASICS #    
+ ############
+
 To build @@PROJECT@@, run:
 
   phing build
@@ -30,6 +53,27 @@ A versioned release can be built with:
 To see all available build targets, run this command:
 
   phing -l
+  
+Check Configuration
+===================
+
+To check how your project is configured, use the 'info' target:
+
+  phing info
+
+This will print details about the project.
+
+Syntax Check
+============
+
+To check the syntax of all of your PHP source code, run this:
+
+  phing lint
+
+It will generate a report on any files that fail to parse correctly.
+  
+Generating Documentation
+========================
 
 To generate docs, do:
 
@@ -37,11 +81,19 @@ To generate docs, do:
 
 Documentation will be stored in doc/. You can start with doc/index.html.
 
+Running Unit Tests
+==================
+
 To run any configured tests, do:
 
   phing test
 
 The above will generate HTML test results which will be placed in test/reports/. If you wish to run the test and print the results directly the the command line (fast tests), you should run 'phing ftest' instead.
+
+  phing ftest
+
+Code Coverage Reports
+=====================
 
 To run coverage analysis, do:
 
@@ -49,7 +101,9 @@ To run coverage analysis, do:
   
 This will create HTML pages describing code coverage. The coverage analysis will be available in test/coverage
 
-OPTIONAL FEATURES
+ ###################
+# OPTIONAL FEATURES #
+ ###################
 
 Phar Packages
 =============
@@ -91,7 +145,7 @@ working on two targets:
 ========  
 To print this message, do:
 
-  phing info
+  phing longhelp
 
     </echo>
   </target>
