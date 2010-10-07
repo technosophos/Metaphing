@@ -120,7 +120,11 @@ Other testing data can be included where it is convenient.
 
 The `data/` directory is for supporting data.
 
+## Things you can delete
 
+You can delete this file, and most README.txt files throughout here. If you are not using Git, you can delete `.gitignore`. If you do not use examples, testing, documentation, data, or scripts, you can delete any or all of those directories. None of them are required. Note, however, that if you delete doc directories, you cannot run `phing doc`. Likewise, if you delete test directories, you cannot run `phing test`.
+
+And feel free to hack on build.xml. Nothing is written in stone.
 
 ## About Conventions
 
