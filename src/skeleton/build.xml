@@ -310,7 +310,7 @@ Edit project.properties (or build.xml) to set the above.
   tweaking, you can use the distributed package as a PEAR package.
   -->
   <target name="fullBuild" description="Full ${projectname} build, including docs."
-    depends="setup,prebuild">
+    depends="setup,prebuild,setPearStability">
     <property name="releasedir" value="${builddir}/${projectname}-${version}" override="true"/>
     <delete dir="${releasedir}" />
     
@@ -376,9 +376,9 @@ Edit project.properties (or build.xml) to set the above.
        <option name="summary" value="${project.summary}"/>
        <option name="description" value="${project.description}"/>
        <option name="apiversion" value="${version}"/>
-       <option name="apistability" value="stable"/>
+       <option name="apistability" value="${stability}"/>
        <option name="releaseversion" value="${version}"/>
-       <option name="releasestability" value="stable"/>
+       <option name="releasestability" value="${stability}"/>
        <option name="license" value="${project.license}"/>
        <option name="phpdep" value="${project.php.version}"/>
        <option name="pearinstallerdep" value="${pear.version}"/>
@@ -675,5 +675,26 @@ Edit project.properties (or build.xml) to set the above.
     <pirumadd targetdir="${pirumdir}" packagefile="${packagedir}/${packagename}-${version}.tgz"/>
   </target>
   -->
-  
+  <target name="setPearStability" depends="setup">
+    <property name="stability">stable</property>
+    <if>
+      <contains string="${version}" substring="dev"/>
+      <then>
+        <property name="stability" override="true">snapshot</property>
+      </then>
+      <elseif>
+        <contains string="${version}" substring="alpha"/>
+        <then>
+          <property name="stability" override="true">alpha</property>
+        </then>
+      </elseif>
+      <elseif>
+        <contains string="${version}" substring="beta"/>
+        <then>
+          <property name="stability" override="true">beta</property>
+        </then>
+      </elseif>
+    </if>
+    <echo>${stability}</echo>
+  </target>
 </project>
