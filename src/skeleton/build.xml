@@ -192,6 +192,7 @@ To print this message, do:
   <property name="builddir" value="./bin/build"/>
   <property name="docsdir" value="./doc"/>
   <property name="packagedir" value="./dist"/>
+  <property name="datadir" value="./data"/>
   <property name="exampledir" value="./examples"/>
   <property name="tutorialdir" value="./tutorials"/>
   
@@ -322,7 +323,7 @@ Edit project.properties (or build.xml) to set the above.
     <mkdir dir="${releasedir}/scripts"/>
     <mkdir dir="${releasedir}/src"/>
     <mkdir dir="${releasedir}/test"/>
-    <mkdir dir="${releasedir}/tutorials"/>
+    <!-- mkdir dir="${releasedir}/tutorials"/ -->
     
     <!-- Copy license files. -->
     <copy todir="${releasedir}">
@@ -350,9 +351,11 @@ Edit project.properties (or build.xml) to set the above.
     </copy>
     
     <!-- Copy tutorials -->
+    <!--
     <copy todir="${releasedir}/tutorials">
       <fileset refid="tutorials"/>
     </copy>
+    -->
     
     <!-- Copy documentation --> 
     <copy todir="${releasedir}/doc">
