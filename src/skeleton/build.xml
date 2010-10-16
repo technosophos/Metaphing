@@ -183,14 +183,25 @@ To print this message, do:
   <includepath classpath="../Phing-Pirum/src"/>
   <taskdef classname="PhingPirum.Task.PirumBuildTask" name="pirumbuild"/>
   <taskdef classname="PhingPirum.Task.PirumAddTask" name="pirumadd"/>
-  <property name="pearchannel" value="../pear.querypath.org"/>
+  <property name="pearchannel" value="../pear.querypath.org/pear"/>
   -->
+  
+  <includepath classpath="../PhingDoxygen/src"/>
+  <taskdef classname="PhingDoxygen.Task.DoxygenTask" name="doxygen"/>
+  
+  <!-- Pyrus tasks. -->
+  <includepath classpath="/Users/mbutcher/Code"/> <!-- Pyrus is here. -->
+  <includepath classpath="../PhingPyrus/src"/>
+  <taskdef classname="PhingPyrus.Task.PyrusMakeTask" name="pyrusmake"/>
+  <taskdef classname="PhingPyrus.Task.PyrusPackageTask" name="pyruspackage"/>
+  <taskdef classname="PhingPyrus.Task.PyrusHelpTask" name="pyrushelp"/>
+  <taskdef classname="PhingPyrus.Task.PyrusExecTask" name="pyrusexec"/>
   
   <!-- Directory locations -->
   <property name="srcdir" value="./src"/>
   <property name="testdir" value="./test"/>
   <property name="builddir" value="./bin/build"/>
-  <property name="docsdir" value="./doc"/>
+  <property name="docsdir" value="./doc/api"/>
   <property name="packagedir" value="./dist"/>
   <property name="datadir" value="./data"/>
   <property name="exampledir" value="./examples"/>
@@ -330,6 +341,13 @@ Edit project.properties (or build.xml) to set the above.
       <fileset refid="licensefiles"/>
     </copy>
     
+    <!-- Pyrus wants README, not README.md -->
+    <copy file="${releasedir}/README.md" tofile="${releasedir}/README"/>
+
+    <!-- Create API and RELEASE files -->
+    <touch file="${releasedir}/API-${version}"/>
+    <touch file="${releasedir}/RELEASE-${version}"/>
+    
     <!-- Copy source code, doing token replacement on version. -->
     <copy todir="${releasedir}/src">
       <filterchain>
@@ -366,6 +384,15 @@ Edit project.properties (or build.xml) to set the above.
     <copy todir="${releasedir}/data">
       <fileset refid="data"/>
     </copy>
+    
+    <!-- Alternate toolchain: Use Pyrus and Pirum to create a package. -->
+    <!--
+    <pyrusmake dir="${releasedir}" packagename="${projectname}" channel="${pear.channel}"/>
+    <pyruspackage packagexml="${releasedir}/package.xml"/>
+    <move file="./${projectname}-${version}.tgz" tofile="${packagedir}/${projectname}-${version}.tgz"/>
+    <pirumadd targetdir="${pearchannel}" packagefile="${packagedir}/${projectname}-${version}.tgz"/>
+    -->
+    
     
     <!-- Create a PEAR package.xml file -->
     <pearpkg2 name="${projectname}" dir="./">
