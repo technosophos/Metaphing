@@ -354,12 +354,12 @@ Edit project.properties (or build.xml) to set the above.
       <fileset refid="licensefiles"/>
     </copy>
     
-    <!-- Pyrus wants README, not README.md -->
+    <!-- Pyrus wants README, not README.pear -->
     <copy file="${releasedir}/README.pear" tofile="${releasedir}/README"/>
 
     <!-- Create API and RELEASE files -->
-    <copy file="{$releasedir}/API" tofile="${releasedir}/API-${version}"/>
-    <copy file="{$releasedir}/API" tofile="${releasedir}/RELEASE-${version}"/>
+    <copy file="${releasedir}/API" tofile="${releasedir}/API-${version}"/>
+    <copy file="${releasedir}/RELEASE" tofile="${releasedir}/RELEASE-${version}"/>
     
     <!-- Copy source code, doing token replacement on version. -->
     <copy todir="${releasedir}/src">
