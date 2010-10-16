@@ -6,6 +6,8 @@
 <!--
 This is the Phing build file for @@PROJECT@@.
 
+THIS BUILD FILE SHOWS EXAMPLES USING BUILT-IN Phing COMMANDS.
+
 Phing is a build tool. Learn more about it at http://phing.info.
 
 Copyright (c) @@YEAR@@, @@AUTHOR@@.
@@ -398,13 +400,60 @@ Edit project.properties (or build.xml) to set the above.
       <fileset refid="data"/>
     </copy>
     
-    <!-- Use Pyrus to create a package. -->
+    <!-- Alternate toolchain: Use Pyrus and Pirum to create a package. -->
+    <!--
     <pyrusmake dir="${releasedir}" packagename="${projectname}" channel="${pear.channel}"/>
     <pyruspackage packagexml="${releasedir}/package.xml"/>
-    
-    <!-- Add the package to the PEAR channel. -->
     <move file="./${projectname}-${version}.tgz" tofile="${packagedir}/${projectname}-${version}.tgz"/>
     <pirumadd targetdir="${pearchannel}" packagefile="${packagedir}/${projectname}-${version}.tgz"/>
+    -->
+    
+    
+    <!-- Create a PEAR package.xml file -->
+    <pearpkg2 name="${projectname}" dir="./">
+       <fileset dir="${releasedir}">
+         <include name="**/**"/>
+       </fileset>
+       <option name="uri" value="${project.homepage}"/>
+       <option name="packagefile" value="package2.xml"/>
+       <option name="channel" value="${pear.channel}"/>
+       <option name="baseinstalldir" value="${projectname}"/>
+       <option name="summary" value="${project.summary}"/>
+       <option name="description" value="${project.description}"/>
+       <option name="apiversion" value="${version}"/>
+       <option name="apistability" value="${stability}"/>
+       <option name="releaseversion" value="${version}"/>
+       <option name="releasestability" value="${stability}"/>
+       <option name="license" value="${project.license}"/>
+       <option name="phpdep" value="${project.php.version}"/>
+       <option name="pearinstallerdep" value="${pear.version}"/>
+       <option name="packagetype" value="php"/>
+       <option name="notes" value="This package was built automatically by Phing/MetaPhing"/>
+       <option name="outputdirectory" value="./${builddir}"/>
+       <option name="packagedirectory" value="./${releasedir}"/>
+       <mapping name="maintainers">
+        <element>
+         <element key="handle" value="${project.lead}"/>
+         <element key="name" value="${project.lead}"/>
+         <element key="email" value="${project.lead.email}"/>
+         <element key="role" value="lead"/>
+        </element>
+       </mapping>
+    </pearpkg2>
+    
+    <!-- Move the package.xml to the releasedir -->
+    <move file="${builddir}/package2.xml" tofile="${packagedir}/package.xml"/>
+    
+    <!-- Create Gzipped Tar file that acts like a PEAR package. This will be put in dist/ -->
+    <tar destfile="${packagedir}/${projectname}-${version}.tgz" compression="gzip">
+      <fileset dir="${builddir}">
+        <include name="${projectname}-${version}/**/*"/>
+        <include name="package.xml"/>
+      </fileset>
+    </tar>
+    
+    <!-- Create a ZIP version which is NOT a PEAR package. Put in dist/. -->
+    <zip destfile="${packagedir}/${projectname}-${version}.zip" basedir="${releasedir}"/>
   </target>
   
   <!-- TARGET
@@ -426,9 +475,32 @@ Edit project.properties (or build.xml) to set the above.
   <target name="doc" depends="lint,setup" description="Generate API docs.">
     <delete dir="${docsdir}"/>
     <doxygen config="${doxygen.config}"/>
-
+    <!--
+    <phpdoc title="${projectname} ${version}"
+      sourcecode="yes"
+      destdir="${docsdir}"
+      output="${phpdoc.style}" 
+      defaultcategoryname="${projectname}"
+      defaultpackagename="${projectname}"
+      examplesdir="examples"
+      quiet="true"
+      >
+      <fileset refid="sourcecode"/>
+      <fileset refid="tutorials"/>
+      <fileset refid="examplecode"/>
+      <projdocfileset dir=".">
+        <include name="README.md"/>
+        <include name="README"/>
+        <include name="INSTALL"/>
+        <include name="COPYING-MIT.txt"/>
+        <include name="RELEASE-*"/>
+        <include name="API-*"/>
+      </projdocfileset>
+    </phpdoc>
+    -->
+    
     <!-- 
-    During documentation generation, this will replace the string %UNSTABLE% with
+    During documentation generation, this will replace the string @UNSTABLE@ with
     the release version ID. You can use this to generate documents with information
     about the release they are part of.
     -->
@@ -597,7 +669,7 @@ Edit project.properties (or build.xml) to set the above.
       <filterchain>
         <stripphpcomments/>
         <stripwhitespace/>
-        <replacetokens begintoken="%" endtoken="%">
+        <replacetokens begintoken="@" endtoken="@">
           <token key="UNSTABLE" value="${version}"/>
           <token key="PHAR_FILENAME" value="${projectname}.phar"/>
         </replacetokens>
@@ -629,4 +701,51 @@ Edit project.properties (or build.xml) to set the above.
     </pharpackage>
   </target>
   
+  <!-- TARGET
+  Use Pyrus to generate package.xml files. 
+  -->
+  <target name="pyrusMake" depends="setup,prebuild" description="EXPERIMENTAL: Use Pyrus to generate a package.xml file from this project.">
+    
+  </target>
+  
+  <!-- TARGET
+  
+  Use Pyrus to create a PEAR package. 
+  -->
+  <target name="pyrusPackage" depends="setup,prebuild" description="EXPERIMENTAL: Use Pyrus to generate a PEAR package.">
+    
+  </target>
+
+  <!-- TARGET
+  Release code to a PEAR channel.
+  -->
+  <!--
+  <target name="release" depends="build">
+    <property name="pirumdir" value="${pearchannel}"/>
+    <pirumbuild targetdir="${pirumdir}"/>
+    <pirumadd targetdir="${pirumdir}" packagefile="${packagedir}/${packagename}-${version}.tgz"/>
+  </target>
+  -->
+  <target name="setPearStability" depends="setup">
+    <property name="stability">stable</property>
+    <if>
+      <contains string="${version}" substring="dev"/>
+      <then>
+        <property name="stability" override="true">snapshot</property>
+      </then>
+      <elseif>
+        <contains string="${version}" substring="alpha"/>
+        <then>
+          <property name="stability" override="true">alpha</property>
+        </then>
+      </elseif>
+      <elseif>
+        <contains string="${version}" substring="beta"/>
+        <then>
+          <property name="stability" override="true">beta</property>
+        </then>
+      </elseif>
+    </if>
+    <echo>${stability}</echo>
+  </target>
 </project>

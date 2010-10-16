@@ -36,11 +36,20 @@ This will create build files, a source code repository tree, and stubs for many 
        |
        |---- CREDITS (Credits file in the PEAR2 format. Necessary if you use Pyrus)
        |
+       |---- README.pear (Info that will be bundled into the PEAR archive)
+       |
+       |---- RELEASE (Release notes/Changelog. Used to build PEAR packages)
+       |
+       |---- API (API changelog. Used to build PEAR packages)
+       |
        |---- build.xml (The Phing build.xml file)
        |
        |---- project.properties (Your project's configuration properties. EDIT THIS.)
        |
        |---- .gitignore (A stub containing Git ignore directives.)
+       |
+       |---- config.doxy (Doxygen documentation configuration file.)
+
 
 The first thing to do with your new project is edit the `project.properties` file. This contains many pieces of metadata and information about your new project. This pieces are used to automatically generate packages, documentation, and unit tests.
 
@@ -50,27 +59,36 @@ You should probably also write a little basic info in `README.md`. This file is 
 
 From here, you can begin adding code, writing tests, and doing your thing.
 
+### Compatibility with Vanilla Phing
+
+metaphing uses a number of tasks that are not included with generic Phing. If you do not want to use these tasks, you may want to copy `compatible_build.xml` to `build.xml` and begin from there.
+
 ## Source Code
 
 All of your PHP source code should go into the `src/` filter. You may structure your code however you want, using whatever your typical conventions are. Automated tasks attempt to ignore the details of code structure.
 
 ## Documentation, Tutorials, and Examples
 
-Documentation goes in `doc/`. You can either write your own documentation or use PhpDocumentor. Note, however, that using PhpDocumentor is strongly encouraged.
+Documentation goes in `doc/`. We use doxygen to generate documentation. Doxygen should be adequately configured to generate PHP API documentation.
 
-In the future, we will also support doxygen.
+Generated documentation will go in `doc/api`
 
-When writing PhpDocumentor documentation, you can use three types of documentation:
+To write documentation:
 
-  * Source code documentation *inline* in your src/ source code.
-  * DocBook formatted tutorials stored in the tutorials/ directory.
-  * Example code goes in `examples/`.
+  * Add inline documentation blocks in your code
+  * Add narrative documentation (descriptions, references, etc.) in `doc/*.php`
+  * Put any source code examples in `examples`
 
-If you put code in the `examples/` directory, it will also be included in the documentation output. But you should use {@link} and @see directives to direct users to the examples.
+If you put code in the `examples/` directory, it will also be included in the documentation output.
 
 ## Building and Packaging
 
-When you run the build command (`phing build -Dversion=1.2.3`), Phing will first make a release copy of your code, stored in `bin/build`, and then package that code into the form you requested. By default, it will build a Gzipped Tar archive in the form of a PEAR package and a plain old Zip file.
+When you run the build command (`phing build -Dversion=1.2.3`), Phing will first make a release copy of your code, stored in `bin/build`, and then package that code into the form you requested. By default, it will build a Gzipped Tar archive in the form of a PEAR package.
+
+NOTE:
+
+  * We use Pyrus to build packages. Pyrus is available from [pear2.php.net](http://pear2.php.net)
+  * We use Pirum to register a package with a channel. Pirum is available from [Pirum-Project.org](http://pirum-project.org)
 
 When your code is packaged, the tgz and zip files will be placed in `dist/`. Example:
 
@@ -105,6 +123,8 @@ What does a PEAR package look like? It's a tgz file with the following format:
                |---- test/
 
 In most cases, this is suitable for standard distributions as well as hosting your code as a PEAR package on a PEAR channel server.
+
+(Note: The above may have changed with the new Pyrus system.)
 
 ## Testing
 
