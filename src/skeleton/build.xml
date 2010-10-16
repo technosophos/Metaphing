@@ -428,14 +428,14 @@ Edit project.properties (or build.xml) to set the above.
     <doxygen config="${doxygen.config}"/>
 
     <!-- 
-    During documentation generation, this will replace the string %UNSTABLE% with
+    During documentation generation, this will replace the string -UNSTABLE% with
     the release version ID. You can use this to generate documents with information
     about the release they are part of.
     -->
     <reflexive>
       <fileset refid="docs"/>
       <filterchain>
-        <replacetokens begintoken="%" endtoken="%">
+        <replacetokens begintoken="-" endtoken="%">
           <token key="UNSTABLE" value="${version}"/>
           <token key="PROJECT" value="${projectname}"/>
           <token key="SUMMARY" value="${project.summary}"/>
