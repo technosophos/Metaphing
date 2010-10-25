@@ -153,7 +153,7 @@ To print this message, do:
   <property file="project.properties"/>
 
   <!-- IMPORTANT: Project settings. -->
-  <property name="projectname" value="@@PROJECT@@"/>
+  <property name="project.name" value="${phing.project.name}"/>
   <property name="project.homepage" value="http://github.com/technosophos/metaphing"/>
   <property name="project.summary" value="A PHP project"/>
   <property name="project.description">
@@ -200,17 +200,17 @@ To print this message, do:
   <taskdef classname="PhingPyrus.Task.PyrusExecTask" name="pyrusexec"/>
   
   <!-- Directory locations -->
-  <property name="srcdir" value="./src"/>
-  <property name="testdir" value="./test"/>
-  <property name="builddir" value="./bin/build"/>
-  <property name="docsdir" value="./doc/api"/>
-  <property name="packagedir" value="./dist"/>
-  <property name="datadir" value="./data"/>
-  <property name="exampledir" value="./examples"/>
-  <property name="tutorialdir" value="./tutorials"/>
+  <property name="srcdir" value="${project.basedir}/src"/>
+  <property name="testdir" value="${project.basedir}/test"/>
+  <property name="builddir" value="${project.basedir}/bin/build"/>
+  <property name="docsdir" value="${project.basedir}/doc/api"/>
+  <property name="packagedir" value="${project.basedir}/dist"/>
+  <property name="datadir" value="${project.basedir}/data"/>
+  <property name="exampledir" value="${project.basedir}/examples"/>
+  <property name="tutorialdir" value="${project.basedir}/tutorials"/>
   
   <!-- If you are writing Phar files, use this for Phar stubs: -->
-  <property name="phardir" value="./phar"/>
+  <property name="phardir" value="${project.basedir}/phar"/>
   
 
   <!-- ====================================================================
@@ -268,14 +268,14 @@ To print this message, do:
   <target name="info" description="Print information about this project" depends="setup">
     <echo>
       
-    Project name: ${projectname}
+    Project name: ${project.name}
     By ${project.lead} (${project.lead.email})
     Summary: ${project.summary}
     Description: ${project.description}
 
     Source code: ${srcdir}
     Complete packages: ${packagedir}
-    Version string pattern: ${projectname}-dev${DSTAMP}
+    Version string pattern: ${project.name}-dev${DSTAMP}
 
 Edit project.properties (or build.xml) to set the above.
     </echo>
@@ -326,9 +326,9 @@ Edit project.properties (or build.xml) to set the above.
   packaging them all up. Along the way, we create a package.xml file. With a little 
   tweaking, you can use the distributed package as a PEAR package.
   -->
-  <target name="fullBuild" description="Full ${projectname} build, including docs."
+  <target name="fullBuild" description="Full ${project.name} build, including docs."
     depends="setup,prebuild,setPearStability">
-    <property name="releasedir" value="${builddir}/${projectname}-${version}" override="true"/>
+    <property name="releasedir" value="${builddir}/${project.name}-${version}" override="true"/>
     <delete dir="${releasedir}" />
     
     <!-- Make all necessary directories. -->
@@ -346,7 +346,7 @@ Edit project.properties (or build.xml) to set the above.
       <filterchain>
         <replacetokens begintoken="%" endtoken="%">
           <token key="UNSTABLE" value="${version}"/>
-          <token key="PROJECT" value="${projectname}"/>
+          <token key="PROJECT" value="${project.name}"/>
           <token key="SUMMARY" value="${project.summary}"/>
           <token key="DESCRIPTION" value="${project.description}"/>
         </replacetokens>
@@ -399,12 +399,12 @@ Edit project.properties (or build.xml) to set the above.
     </copy>
     
     <!-- Use Pyrus to create a package. -->
-    <pyrusmake dir="${releasedir}" packagename="${projectname}" channel="${pear.channel}"/>
+    <pyrusmake dir="${releasedir}" packagename="${project.name}" channel="${pear.channel}"/>
     <pyruspackage packagexml="${releasedir}/package.xml"/>
     
     <!-- Add the package to the PEAR channel. -->
-    <move file="./${projectname}-${version}.tgz" tofile="${packagedir}/${projectname}-${version}.tgz"/>
-    <pirumadd targetdir="${pearchannel}" packagefile="${packagedir}/${projectname}-${version}.tgz"/>
+    <move file="./${project.name}-${version}.tgz" tofile="${packagedir}/${project.name}-${version}.tgz"/>
+    <pirumadd targetdir="${pearchannel}" packagefile="${packagedir}/${project.name}-${version}.tgz"/>
   </target>
   
   <!-- TARGET
@@ -437,7 +437,7 @@ Edit project.properties (or build.xml) to set the above.
       <filterchain>
         <replacetokens begintoken="-" endtoken="%">
           <token key="UNSTABLE" value="${version}"/>
-          <token key="PROJECT" value="${projectname}"/>
+          <token key="PROJECT" value="${project.name}"/>
           <token key="SUMMARY" value="${project.summary}"/>
           <token key="DESCRIPTION" value="${project.description}"
         </replacetokens>
@@ -555,7 +555,7 @@ Edit project.properties (or build.xml) to set the above.
   -->
   <target name="docBuild" description="Build a package containing just docs." 
     depends="setup,prebuild,doc">
-    <property name="releasedir" value="${builddir}/${projectname}-${version}-docs"/>
+    <property name="releasedir" value="${builddir}/${project.name}-${version}-docs"/>
     <delete dir="${releasedir}" />
     
     <!-- Make all necessary directories. -->
@@ -572,12 +572,12 @@ Edit project.properties (or build.xml) to set the above.
     </copy>
     
     <!-- Create tgz and zip versions. -->
-    <tar destfile="${packagedir}/${projectname}-${version}-docs.tgz" compression="gzip">
+    <tar destfile="${packagedir}/${project.name}-${version}-docs.tgz" compression="gzip">
       <fileset dir="${builddir}">
-        <include name="${projectname}-${version}-docs/**/*"/>
+        <include name="${project.name}-${version}-docs/**/*"/>
       </fileset>
     </tar>
-    <zip destfile="${packagedir}/${projectname}-${version}-docs.zip" basedir="${releasedir}"/>
+    <zip destfile="${packagedir}/${project.name}-${version}-docs.zip" basedir="${releasedir}"/>
   </target>
   
   <!-- TARGET
@@ -589,7 +589,7 @@ Edit project.properties (or build.xml) to set the above.
   -->
   <target name="pharBuild" depends="setup,prebuild" description="Build a Phar package of this project.">
     
-    <property name="releasedir" value="${builddir}/${projectname}-${version}-phar" override="true"/>
+    <property name="releasedir" value="${builddir}/${project.name}-${version}-phar" override="true"/>
     <echo>${releasedir}</echo>
     <delete dir="${releasedir}" />
     <mkdir dir="${releasedir}"/>
@@ -599,7 +599,7 @@ Edit project.properties (or build.xml) to set the above.
         <stripwhitespace/>
         <replacetokens begintoken="%" endtoken="%">
           <token key="UNSTABLE" value="${version}"/>
-          <token key="PHAR_FILENAME" value="${projectname}.phar"/>
+          <token key="PHAR_FILENAME" value="${project.name}.phar"/>
         </replacetokens>
       </filterchain>
       <fileset dir="${srcdir}">
@@ -611,9 +611,9 @@ Edit project.properties (or build.xml) to set the above.
     </copy>
     
     <pharpackage 
-      destfile="${packagedir}/${projectname}-${version}.phar" 
+      destfile="${packagedir}/${project.name}-${version}.phar" 
       basedir="${releasedir}"
-      alias="${projectname}.phar">
+      alias="${project.name}.phar">
       <!-- stub="${releasedir}/basic_loader.php" -->
       <fileset dir="${releasedir}">
         <include name="**/**"/>
