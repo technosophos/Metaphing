@@ -31,4 +31,4 @@ Once you've gotten a project started with metaphing, you can modify your environ
 ## Usage
 
 ------
-metaphing was written by Matt Butcher (technosophos).
+metaphing was written by Matt Butcher (technosophos). It is released under an MIT-style license.
